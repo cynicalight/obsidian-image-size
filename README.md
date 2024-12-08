@@ -1,4 +1,4 @@
-# Obsidian Plugin: image size
+# Obsidian Plugin: Image Size
 
 This is a image plugin for Obsidian (https://obsidian.md).
 
