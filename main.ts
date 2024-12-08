@@ -3,23 +3,26 @@ import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Set
 // Remember to rename these classes and interfaces!
 
 interface MyPluginSettings {
-	mySetting: string;
+	imageSize: string;
+	imagePath: string;
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+	imageSize: '600',
+	imagePath: '/img'
 }
 
 export default class MyPlugin extends Plugin {
 	settings: MyPluginSettings;
 
 	async onload() {
+		console.log('loading plugin image size');
 		await this.loadSettings();
 
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
 			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
+			new Notice('This is a notice by CYY!');
 		});
 		// Perform additional things with the ribbon
 		ribbonIconEl.addClass('my-plugin-ribbon-class');
@@ -76,6 +79,59 @@ export default class MyPlugin extends Plugin {
 
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+
+		this.registerEvent(
+			this.app.workspace.on("editor-paste", async (evt: ClipboardEvent, editor: Editor) => {
+				const items = evt.clipboardData?.items;
+
+				if (items) {
+					for (let i = 0; i < items.length; i++) {
+						const item = items[i];
+						if (item.type.startsWith("image/")) {
+							// 阻止默认粘贴行为
+							evt.preventDefault();
+
+							const file = item.getAsFile();
+							if (file) {
+								const editor = this.app.workspace.getActiveViewOfType(MarkdownView)?.editor;
+								if (!editor) return;
+
+								// 生成图片名称
+								const now = new Date();
+								const timestamp = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
+								const imageName = `Pasted image ${timestamp}.png`;
+								const imageNameMd = `Pasted%20image%20${timestamp}.png`;
+
+								// // 将图片保存到文件系统
+								// const arrayBuffer = await file.arrayBuffer();
+								// const data = new Uint8Array(arrayBuffer);
+								// await this.app.vault.createBinary(this.settings.imagePath, data);
+
+
+								// 检查文件是否存在
+								const fileExists = await this.app.vault.adapter.exists(imageName);
+								if (!fileExists) {
+									// 将图片保存到文件系统
+									const arrayBuffer = await file.arrayBuffer();
+									const data = new Uint8Array(arrayBuffer);
+									const imagePath = `${this.settings.imagePath}/${imageName}`;
+									await this.app.vault.createBinary(imagePath, data);
+								} else {
+									console.log("File already exists.");
+								}
+
+
+								// 插入 Markdown 图片链接
+								const cursor = editor.getCursor();
+								const markdownImage = `![${this.settings.imageSize}](${imageNameMd})`;
+								editor.replaceRange(markdownImage, cursor);
+							}
+							break; // 只处理第一个图片
+						}
+					}
+				}
+			})
+		);
 	}
 
 	onunload() {
@@ -121,14 +177,27 @@ class SampleSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
+			.setName('Default Image Size')
+			.setDesc('Set the default size for pasted images (e.g., 600)')
 			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
+				.setPlaceholder('Enter size like 600')
+				.setValue(this.plugin.settings.imageSize || '600')
 				.onChange(async (value) => {
-					this.plugin.settings.mySetting = value;
+					this.plugin.settings.imageSize = value;
 					await this.plugin.saveSettings();
 				}));
+
+		new Setting(containerEl)
+			.setName('Image Path')
+			.setDesc('Set the default path for pasted images (e.g., /img), better be the same as the attachment folder in your settings.')
+			.addText(text => text
+				.setPlaceholder('Enter path like /img')
+				.setValue(this.plugin.settings.imagePath || '/img')
+				.onChange(async (value) => {
+					this.plugin.settings.imagePath = value;
+					await this.plugin.saveSettings();
+				}));
+
+				
 	}
 }
