@@ -2,6 +2,8 @@
 
 This is a image plugin for Obsidian (https://obsidian.md).
 
+- blog: https://bu44er.top/posts/cs/74665601/
+
 ## feature
 
 - set the default size of the pasted images
