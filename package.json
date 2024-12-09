@@ -1,7 +1,7 @@
 {
-	"name": "obsidian-sample-plugin",
-	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"name": "image-size",
+	"version": "1.0.2",
+	"description": "Set the default size for pasted images.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
