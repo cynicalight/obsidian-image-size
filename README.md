@@ -33,6 +33,12 @@ After set the default size in the setting of the plugin, you can paste any image
 
 And, the pasted image will be stored in the folder you set. 
 
+## attentions
+
 **Please make sure the folder you set exists!**
+
+**Please note that the folder you set should start with `/`!**
+
+**The links format of the plugin is 'relative path to file'!**
 
 

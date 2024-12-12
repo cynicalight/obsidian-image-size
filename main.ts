@@ -75,7 +75,7 @@ export default class ImageSize extends Plugin {
 
 								// 插入 Markdown 图片链接
 								const cursor = editor.getCursor();
-								const markdownImage = `![${this.settings.imageSize}](${imageNameMd})`;
+								const markdownImage = `![${this.settings.imageSize}](../../../../..${this.settings.imagePath}/${imageNameMd})`;
 								editor.replaceRange(markdownImage, cursor);
 								// 移动光标至行尾
 								editor.setCursor({ line: cursor.line, ch: cursor.ch + markdownImage.length });
