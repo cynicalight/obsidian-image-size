@@ -2,13 +2,13 @@
 
 This is a image plugin for Obsidian (https://obsidian.md).
 
-- blog: https://bu44er.top/posts/cs/74665601/
+- blog: [https://bu44er.top/posts/cs/74665601/](https://bu44er.top/posts/cs/74665601/)
 
 ## feature
 
 - set the default size of the pasted images
 - add enough relative path
-    - relative path is friendly to bloggers:https://bu44er.top/posts/cs/hugo%E5%9B%BE%E7%89%87%E6%8F%92%E5%85%A5%E7%BB%93%E5%90%88obsidian%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%B5%81/
+    - relative path is friendly to bloggers: [https://bu44er.top/posts/cs/7mb7cu38/](https://bu44er.top/posts/cs/7mb7cu38/)
 
 ## how to install
 
