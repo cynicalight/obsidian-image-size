@@ -17,13 +17,12 @@ This is a image plugin for Obsidian (https://obsidian.md).
 /path/to/yourvault/.obsidian/plugins
 ```
 
-2. download main.js and source code(zip) in the latest release
+2. directly download the obsidain-image-size.zip in the latest release 
+    - or download main.js and source code(zip) in the latest release and put the main.js into the source code folder
+    - ![image](https://github.com/user-attachments/assets/8e4cb829-1a7f-44a4-b8e3-81445c13a722)
 
-![image](https://github.com/user-attachments/assets/8e4cb829-1a7f-44a4-b8e3-81445c13a722)
-
-4. put the main.js into the source code folder
-5. put the whole source code folder into your vault's plugins folder
-6. reload the obsidian plugins, and you can see Image Size
+3. put the whole folder into your vault's plugins folder
+4. reload the obsidian plugins, and you can see Image Size
 
 ## easy to use
 
