@@ -29,8 +29,6 @@ export default class ImageSize extends Plugin {
 			console.log('click', evt);
 		});
 
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 
 		this.registerEvent(
 			this.app.workspace.on("editor-paste", async (evt: ClipboardEvent, editor: Editor) => {
