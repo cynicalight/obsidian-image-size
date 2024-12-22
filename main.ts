@@ -1,6 +1,5 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
-// Remember to rename these classes and interfaces!
 
 interface ImageSizeSettings {
 	imageSize: string;
@@ -113,7 +112,7 @@ class ImageSizeSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName('Default Image Size')
+			.setName('Default image size')
 			.setDesc('Set the default size for pasted images (e.g., 600)')
 			.addText(text => text
 				.setPlaceholder('Enter size like 600')
@@ -124,7 +123,7 @@ class ImageSizeSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName('Image Path')
+			.setName('Image path')
 			.setDesc('Set the default path for pasted images (e.g., /img), better be the same as the attachment folder in your settings.')
 			.addText(text => text
 				.setPlaceholder('Enter path like /img')
