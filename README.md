@@ -38,7 +38,7 @@ And, the pasted image will be stored in the folder you set.
 
 **Please make sure the folder you set exists!**
 
-**Please note that the folder you set should start with `/`!**
+**It is strongly recommended to place the attachment folder in the project root directory!**
 
 **The links format of the plugin is 'relative path to file'!**
 
