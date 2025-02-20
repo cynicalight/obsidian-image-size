@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, FileManager, TFile } from 'obsidian';
 
 
 interface ImageSizeSettings {
@@ -15,19 +15,6 @@ const DEFAULT_SETTINGS: ImageSizeSettings = {
 	useDirectoryTravel: true
 }
 
-// 生成 Markdown 链接的函数
-function generateMarkdownLink(imagePath: string, imageNameMd: string, imageSize: string, useDirectoryTravel: boolean): string {
-    if (useDirectoryTravel) {
-		return `![${imageSize}](../../../../../../${imagePath}/${imageNameMd})`;
-	} else {
-		return `![${imageSize}](${imagePath}/${imageNameMd})`;
-	}
-}
-
-// 生成 Wiki 链接的函数
-function generateWikiLink(imagePath: string, imageName: string): string {
-    return `![[${imagePath}/${imageName}]]`;
-}
 
 export default class ImageSize extends Plugin {
 	settings: ImageSizeSettings;
@@ -50,7 +37,8 @@ export default class ImageSize extends Plugin {
 		this.registerEvent(
 			this.app.workspace.on("editor-paste", async (evt: ClipboardEvent, editor: Editor) => {
 				const items = evt.clipboardData?.items;
-
+				const fm = this.app.fileManager;
+				
 				if (items) {
 					for (let i = 0; i < items.length; i++) {
 						const item = items[i];
@@ -69,8 +57,6 @@ export default class ImageSize extends Plugin {
 								const imageName = `Pasted image ${timestamp}.png`;
 								const imageNameMd = `Pasted%20image%20${timestamp}.png`;
 
-								
-
 								// 检查文件是否存在
 								const fileExists = await this.app.vault.adapter.exists(imageName);
 								if (!fileExists) {
@@ -83,15 +69,17 @@ export default class ImageSize extends Plugin {
 									console.log("File already exists.");
 								}
 
+								const tfile = this.app.vault.getAbstractFileByPath(`${this.settings.imagePath}/${imageName}`) as TFile;
 
 								// 插入 Markdown 图片链接或 Wiki 链接
 								const cursor = editor.getCursor();
-								const markdownImage = generateMarkdownLink(this.settings.imagePath, imageNameMd, this.settings.imageSize, this.settings.useDirectoryTravel ?? true);
-								const wikiLink = generateWikiLink(this.settings.imagePath, imageName);
-								const linkToInsert = this.settings.useWikiLinks ? wikiLink : markdownImage;
-								editor.replaceRange(linkToInsert, cursor);
+								const activeFile = this.app.workspace.getActiveFile();
+								if (!activeFile) return;
+								const markdownImage = fm.generateMarkdownLink(tfile, activeFile.path, '', this.settings.imageSize);
+				
+								editor.replaceRange(markdownImage, cursor);
 								// 移动光标至行尾
-								editor.setCursor({ line: cursor.line, ch: cursor.ch + linkToInsert.length });
+								editor.setCursor({ line: cursor.line, ch: cursor.ch + markdownImage.length });
 							}
 							break; // 只处理第一个图片
 						}
@@ -148,17 +136,6 @@ class ImageSizeSettingTab extends PluginSettingTab {
 					this.plugin.settings.imagePath = value;
 					await this.plugin.saveSettings();
 				}));
-
-		new Setting(containerEl)
-			.setName('Wiki links')
-			.setDesc("Use wiki links instead of markdown links.(The Wiki link itself does not support setting the image size directly. I don't understand why community review requires me to add the wiki link function.)")
-			.addToggle(toggle => toggle
-				.setValue(this.plugin.settings.useWikiLinks ?? false)
-				.onChange(async (value) => {
-					this.plugin.settings.useWikiLinks = value;
-					await this.plugin.saveSettings();
-				}));
-
 
 		new Setting(containerEl)
 			.setName('Add "../../../../../../" to the image path in md mode')
