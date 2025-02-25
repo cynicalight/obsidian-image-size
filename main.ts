@@ -27,12 +27,6 @@ export default class ImageSize extends Plugin {
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new ImageSizeSettingTab(this.app, this));
 
-		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
-		// Using this function will automatically remove the event listener when this plugin is disabled.
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			console.log('click', evt);
-		});
-
 
 		this.registerEvent(
 			this.app.workspace.on("editor-paste", async (evt: ClipboardEvent, editor: Editor) => {
@@ -56,6 +50,8 @@ export default class ImageSize extends Plugin {
 								const timestamp = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
 								const imageName = `Pasted image ${timestamp}.png`;
 								const imageNameMd = `Pasted%20image%20${timestamp}.png`;
+								let imagePath: string = `${this.settings.imagePath}/${imageName}`;
+								let imagePathT: string = imagePath;
 
 								// 检查文件是否存在
 								const fileExists = await this.app.vault.adapter.exists(imageName);
@@ -63,19 +59,27 @@ export default class ImageSize extends Plugin {
 									// 将图片保存到文件系统
 									const arrayBuffer = await file.arrayBuffer();
 									const data = new Uint8Array(arrayBuffer);
-									const imagePath = `${this.settings.imagePath}/${imageName}`;
 									await this.app.vault.createBinary(imagePath, data);
 								} else {
 									console.log("File already exists.");
 								}
 
-								const tfile = this.app.vault.getAbstractFileByPath(`${this.settings.imagePath}/${imageName}`) as TFile;
+								if(this.settings.useDirectoryTravel){
+									imagePathT = "../../../../../../" + imagePath;
+									console.log(imagePath);
+								}
+
+								const tfile = this.app.vault.getFileByPath(imagePath);
 
 								// 插入 Markdown 图片链接或 Wiki 链接
 								const cursor = editor.getCursor();
 								const activeFile = this.app.workspace.getActiveFile();
 								if (!activeFile) return;
-								const markdownImage = fm.generateMarkdownLink(tfile, activeFile.path, '', this.settings.imageSize);
+								if (!tfile){
+									console.log("tfile not found");
+									return;
+								}
+								const markdownImage = fm.generateMarkdownLink(tfile, imagePathT, '', this.settings.imageSize);
 				
 								editor.replaceRange(markdownImage, cursor);
 								// 移动光标至行尾
@@ -139,7 +143,7 @@ class ImageSizeSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Add "../../../../../../" to the image path in md mode')
-			.setDesc("If you want to directly push your md to your blog via hugo, I recommand you to set the image path as ../../../../../../img.")
+			.setDesc("If you want to directly push your md to your blog via hugo, I recommand you to set the image path as ../../../../../../img. BUT once you turn on this option, you must put the img file in your vault's root directory.")
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.useDirectoryTravel ?? true)
 				.onChange(async (value) => {
