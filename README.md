@@ -8,9 +8,13 @@ This is a image plugin for Obsidian (https://obsidian.md).
 
 - set the default size of the pasted images
 - add enough relative path
-    - relative path is friendly to bloggers: [https://bu44er.top/posts/cs/7mb7cu38/](https://bu44er.top/posts/cs/7mb7cu38/)
+    - relative path is friendly to bloggers using hugo: [https://bu44er.top/posts/cs/7mb7cu38/](https://bu44er.top/posts/cs/7mb7cu38/)
 
 ## how to install
+
+You can directly install this plugin in Obsidian.
+
+Or 
 
 1. find your vault's plugins
 ```bash
@@ -36,10 +40,9 @@ And, the pasted image will be stored in the folder you set.
 
 ## attentions
 
-**Please make sure the folder you set exists!**
+Please make sure the folder you set exists!
 
-**It is strongly recommended to place the attachment folder in the project root directory!**
+It is strongly recommended to place the attachment folder in the **project root directory!**
 
-**The links format of the plugin is 'relative path to file'!**
 
 
