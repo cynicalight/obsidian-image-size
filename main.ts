@@ -32,7 +32,7 @@ export default class ImageSize extends Plugin {
 			this.app.workspace.on("editor-paste", async (evt: ClipboardEvent, editor: Editor) => {
 				const items = evt.clipboardData?.items;
 				const fm = this.app.fileManager;
-				
+
 				if (items) {
 					for (let i = 0; i < items.length; i++) {
 						const item = items[i];
@@ -58,13 +58,13 @@ export default class ImageSize extends Plugin {
 								if (!fileExists) {
 									// 将图片保存到文件系统
 									const arrayBuffer = await file.arrayBuffer();
-									const data = new Uint8Array(arrayBuffer);
-									await this.app.vault.createBinary(imagePath, data);
+									// createBinary expects an ArrayBuffer — pass the original buffer.
+									await this.app.vault.createBinary(imagePath, arrayBuffer);
 								} else {
 									console.log("File already exists.");
 								}
 
-								if(this.settings.useDirectoryTravel){
+								if (this.settings.useDirectoryTravel) {
 									imagePathT = "../../../../../../" + imagePath;
 									console.log(imagePath);
 								}
@@ -75,12 +75,12 @@ export default class ImageSize extends Plugin {
 								const cursor = editor.getCursor();
 								const activeFile = this.app.workspace.getActiveFile();
 								if (!activeFile) return;
-								if (!tfile){
+								if (!tfile) {
 									console.log("tfile not found");
 									return;
 								}
-								const markdownImage = fm.generateMarkdownLink(tfile, imagePathT, '', this.settings.imageSize);
-				
+								const markdownImage = '!' + fm.generateMarkdownLink(tfile, imagePathT, '', this.settings.imageSize);
+
 								editor.replaceRange(markdownImage, cursor);
 								// 移动光标至行尾
 								editor.setCursor({ line: cursor.line, ch: cursor.ch + markdownImage.length });
@@ -115,7 +115,7 @@ class ImageSizeSettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
-		const {containerEl} = this;
+		const { containerEl } = this;
 
 		containerEl.empty();
 
@@ -152,6 +152,6 @@ class ImageSizeSettingTab extends PluginSettingTab {
 				}));
 
 
-				
+
 	}
 }
